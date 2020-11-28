@@ -1,0 +1,15 @@
+stages:
+  - release
+
+variables:
+  DOCKER_DRIVER: overlay2
+
+semver:
+  stage: release
+  image: node:13
+  before_script:
+    - npm install @semantic-release/gitlab
+    - cat $SEM_RELEASE_OPTIONS > .releaserc.yml
+  script: npx semantic-release -t \${version}
+  only:
+    - master
