@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"pollywog/domain/service"
 )
 
 func postPoll(w http.ResponseWriter, r *http.Request) {
@@ -12,8 +13,10 @@ func postPoll(w http.ResponseWriter, r *http.Request) {
 		var request PollRequest
 		err := json.NewDecoder(r.Body).Decode(&request)
 		if err == nil {
-			if IsValidPollRequest(request) {
-				response := PollResponse{123}
+			poll := toDomainObject(request)
+			if service.IsValidForCreation(poll) {
+				id := service.CreatePoll(poll)
+				response := toPollResponse(id)
 				json.NewEncoder(w).Encode(response)
 			} else {
 				w.WriteHeader(http.StatusUnprocessableEntity)
