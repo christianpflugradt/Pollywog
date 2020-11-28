@@ -35,25 +35,43 @@ func (db *Database) connectMySql() *sql.DB {
 }
 
 func (db *Database) Disconnect() {
-	db.con.Close()
+	err := db.con.Close()
+	if err != nil {
+		fmt.Print(err)
+	}
 	db.con = nil
 }
 
 func (db *Database) executeDdl(tableSql string) {
-	db.con.Exec(tableSql)
-}
-
-func (db *Database) InsertPoll(poll model.Poll) int {
-	_, err := db.con.Exec("INSERT INTO Poll (title, description, deadline) VALUES (?, ?, ?)",
-		poll.Title, poll.Desc, poll.Deadline)
+	_, err := db.con.Exec(tableSql)
 	if err != nil {
 		fmt.Print(err)
 	}
-	row := db.con.QueryRow("SELECT MAX(ID) FROM Poll")
+}
+
+func (db *Database) InsertPoll(poll model.Poll) int {
+	_, err := db.con.Exec("INSERT INTO poll (title, description, deadline) VALUES (?, ?, ?)",
+		poll.Title, poll.Description, poll.Deadline)
+	if err != nil {
+		fmt.Print(err)
+	}
+	row := db.con.QueryRow("SELECT MAX(id) FROM poll")
 	var id int
 	err = row.Scan(&id)
 	if err != nil {
 		fmt.Print(err)
 	}
+	db.insertPollParticipants(id, poll)
 	return id
+}
+
+func (db *Database) insertPollParticipants(id int, poll model.Poll) {
+	for _, participant := range poll.Participants {
+		_, err := db.con.Exec(`INSERT INTO participant_in_poll 
+				(poll_id, displayname, mail, secret) VALUES (?, ?, ?, ?)`,
+			id, participant.Name, participant.Mail, participant.Secret)
+		if err != nil {
+			fmt.Print(err)
+		}
+	}
 }

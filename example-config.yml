@@ -1,0 +1,10 @@
+client:
+  baseurl: https://example.xyz/motivote/#
+server:
+  port: 9999
+smtp:
+  identity:
+  user: noreply@example.xyz
+  password: examplepassword
+  host: example.xyz
+  port: 25
