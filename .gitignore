@@ -1,2 +1,5 @@
 .idea
 *.iml
+
+# Don't check your custom config file in!
+local-config.yml

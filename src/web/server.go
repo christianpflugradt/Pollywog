@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"pollywog/domain/service"
+	sys "pollywog/system"
 )
 
 func postPoll(w http.ResponseWriter, r *http.Request) {
@@ -17,7 +18,10 @@ func postPoll(w http.ResponseWriter, r *http.Request) {
 			if service.IsValidForCreation(poll) {
 				id := service.CreatePoll(poll)
 				response := toPollResponse(id)
-				json.NewEncoder(w).Encode(response)
+				err = json.NewEncoder(w).Encode(response)
+				if err != nil {
+					fmt.Print(err)
+				}
 			} else {
 				w.WriteHeader(http.StatusUnprocessableEntity)
 			}
@@ -50,5 +54,6 @@ func Serve() {
 	http.HandleFunc("/poll", postPoll)
 	http.HandleFunc("/options", postOptions)
 	http.HandleFunc("/votes", postVotes)
-	log.Fatal(http.ListenAndServe(":9999", nil))
+	var config *sys.Config
+	log.Fatal(http.ListenAndServe(":" + config.Get().Server.Port, nil))
 }

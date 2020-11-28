@@ -13,9 +13,21 @@ func toDomainObject(request PollRequest) model.Poll {
 	}
 	return model.Poll{
 		Title: request.Title,
-		Desc: request.Desc,
+		Description: request.Description,
 		Deadline: deadline,
+		Participants: mapParticipants(request),
 	}
+}
+
+func mapParticipants(request PollRequest) []model.Participant {
+	participants := make([]model.Participant, len(request.Participants))
+	for index, participant := range request.Participants {
+		participants[index] = model.Participant {
+			Name: participant.Name,
+			Mail: participant.Mail,
+		}
+	}
+	return participants
 }
 
 func toPollResponse(id int) PollResponse {

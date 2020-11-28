@@ -7,6 +7,7 @@
 Pollywog depends on the following libraries (install them via go get)
 * github.com/go-sql-driver/mysql
 * github.com/mattn/go-sqlite3
+* gopkg.in/yaml.v2
 
 ## run from source ##
 
