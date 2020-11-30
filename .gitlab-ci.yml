@@ -1,8 +1,47 @@
+image: golang
+
 stages:
+  - build
   - release
 
 variables:
   DOCKER_DRIVER: overlay2
+
+build_snapshot:
+  stage: build
+  before_script:
+    - ln -s $CI_PROJECT_DIR/src /go/src/pollywog
+    - echo "package model; const Version = \"`git describe --tags`\"" > src/domain/model/version.go
+    - go get github.com/go-sql-driver/mysql
+    - go get github.com/mattn/go-sqlite3
+    - go get gopkg.in/yaml.v2
+  script:
+    - go build src/pollywog.go
+  artifacts:
+    when: always
+    paths:
+      - pollywog
+    expire_in: 1 week
+  except:
+    - tags
+
+publish_release:
+  stage: release
+  before_script:
+    - ln -s $CI_PROJECT_DIR/src /go/src/pollywog
+    - echo "package model; const Version = \"`git describe --tags`\"" > src/domain/model/version.go
+    - go get github.com/go-sql-driver/mysql
+    - go get github.com/mattn/go-sqlite3
+    - go get gopkg.in/yaml.v2
+  script:
+    - go build src/pollywog.go
+  artifacts:
+    when: always
+    paths:
+      - pollywog
+    expire_in: 1 week
+  only:
+    - tags
 
 semver:
   stage: release
@@ -10,6 +49,7 @@ semver:
   before_script:
     - npm install @semantic-release/gitlab
     - cat $SEM_RELEASE_OPTIONS > .releaserc.yml
-  script: npx semantic-release -t \${version}
+  script:
+    - npx semantic-release -t \${version}
   only:
     - master
