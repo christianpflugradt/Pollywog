@@ -15,11 +15,15 @@ func supplySecrets(participants []model.Participant) {
 	rand.Seed(time.Now().UnixNano())
 	for index, _ := range participants {
 		unhashed := randomString()
-		hash := sha512.New512_256()
-		hash.Write([]byte(unhashed))
-		participants[index].Secret = hex.EncodeToString(hash.Sum(nil))
+		participants[index].Secret = Hash(unhashed)
 		notifyParticipant(participants[index], unhashed)
 	}
+}
+
+func Hash(secret string) string {
+	hash := sha512.New512_256()
+	hash.Write([]byte(secret))
+	return hex.EncodeToString(hash.Sum(nil))
 }
 
 func randomString() string {

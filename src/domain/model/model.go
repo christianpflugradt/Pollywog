@@ -4,6 +4,7 @@ import "time"
 
 type Poll struct {
 	ID          int
+	RequesterID int
 	Title       string
 	Description string
 	Open        bool
