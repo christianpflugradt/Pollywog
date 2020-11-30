@@ -13,6 +13,7 @@ type ParticipantRequest struct {
 }
 
 type PollResponse struct {
+	Version string `json:"version"`
 	ID int                            `json:"id"`
 	RequesterId int `json:"requester_id"`
 	Title       string                `json:"title"`

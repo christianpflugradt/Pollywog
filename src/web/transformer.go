@@ -33,6 +33,7 @@ func mapParticipantRequests(request PollRequest) []model.Participant {
 func toPollResponse(poll model.Poll) PollResponse {
 	deadline := poll.Deadline.Format("20060102")
 	return PollResponse{
+		Version: model.Version,
 		ID: poll.ID,
 		RequesterId: poll.RequesterID,
 		Title: poll.Title,
