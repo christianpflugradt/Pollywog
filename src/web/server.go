@@ -14,6 +14,8 @@ func multiPoll(w http.ResponseWriter, r *http.Request) {
 		postPoll(w, r)
 	} else if r.Method == http.MethodGet {
 		getPoll(w, r)
+	} else if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusOK)
 	} else {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
@@ -56,6 +58,8 @@ func getPoll(w http.ResponseWriter, r *http.Request) {
 func postOptions(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		w.WriteHeader(http.StatusAccepted)
+	} else if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusOK)
 	} else {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
@@ -64,6 +68,8 @@ func postOptions(w http.ResponseWriter, r *http.Request) {
 func postVotes(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		w.WriteHeader(http.StatusAccepted)
+	} else if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusOK)
 	} else {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
