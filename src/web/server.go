@@ -22,23 +22,27 @@ func multiPoll(w http.ResponseWriter, r *http.Request) {
 }
 
 func postPoll(w http.ResponseWriter, r *http.Request) {
-	var request PollRequest
-	err := json.NewDecoder(r.Body).Decode(&request)
-	if err == nil {
-		poll := toDomainObject(request)
-		if service.IsValidForCreation(poll) {
-			poll.ID = service.CreatePoll(poll)
-			response := toPollResponse(poll)
-			err = json.NewEncoder(w).Encode(response)
-			if err != nil {
-				fmt.Print(err)
+	if service.IsVerifiedAdmin(r.Header.Get("Authorization")) {
+		var request PollRequest
+		err := json.NewDecoder(r.Body).Decode(&request)
+		if err == nil {
+			poll := toDomainObject(request)
+			if service.IsValidForCreation(poll) {
+				createdPoll := service.CreatePoll(poll)
+				response := toPollResponse(createdPoll)
+				err = json.NewEncoder(w).Encode(response)
+				if err != nil {
+					fmt.Print(err)
+				}
+			} else {
+				w.WriteHeader(http.StatusUnprocessableEntity)
 			}
 		} else {
-			w.WriteHeader(http.StatusUnprocessableEntity)
+			fmt.Print(err)
+			w.WriteHeader(http.StatusBadRequest)
 		}
 	} else {
-		fmt.Print(err)
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusUnauthorized)
 	}
 }
 

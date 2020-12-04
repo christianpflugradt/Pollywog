@@ -6,6 +6,25 @@ import (
 	"time"
 )
 
+func (db *Database) sqlSelectPollById(id int) model.Poll {
+	var title, description string
+	var deadline time.Time
+	err := db.con.QueryRow(`
+		SELECT p.title, p.description, p.deadline FROM poll p 
+		WHERE p.id = ?`, id).Scan(&title, &description, &deadline)
+	if err != nil {
+		id = -1
+		fmt.Print(err)
+	}
+	return model.Poll{
+		ID: id,
+		Title: title,
+		Description: description,
+		Deadline: deadline,
+		Participants: db.selectPollParticipants(id),
+	}
+}
+
 func (db *Database) sqlSelectPoll(secret string) model.Poll {
 	var id, requesterId int
 	var title, description string

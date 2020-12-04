@@ -39,11 +39,11 @@ func isDeadlineValid(poll model.Poll) bool {
 		poll.Deadline.After(time.Now().Add(time.Hour * time.Duration(1)))
 }
 
-func CreatePoll(poll model.Poll) int {
+func CreatePoll(poll model.Poll) model.Poll {
 	supplySecrets(poll.Participants)
 	con := db.Database{}
 	defer con.Disconnect()
 	con.Connect()
 	id := con.InsertPoll(poll)
-	return id
+	return con.SelectPollById(id)
 }

@@ -43,3 +43,8 @@ func notifyParticipant(participant model.Participant, unhashed string) {
 		config.Get().Client.BaseUrl + unhashed + "\r\n")
 	sys.SendMail(to, msg)
 }
+
+func IsVerifiedAdmin(secret string) bool {
+	var config *sys.Config
+	return Hash(config.Get().Server.Admintoken) == secret
+}
