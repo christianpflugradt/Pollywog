@@ -56,3 +56,7 @@ func (db *Database) InsertPoll(poll model.Poll) int {
 func (db *Database) SelectPoll(secret string) model.Poll {
 	return db.sqlSelectPoll(secret)
 }
+
+func (db *Database) SelectPollById(id int) model.Poll {
+	return db.sqlSelectPollById(id)
+}

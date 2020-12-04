@@ -14,6 +14,7 @@ type Config struct {
 	}
 	Server struct {
 		Port string `yaml:"port"`
+		Admintoken string `yaml:"admintoken"`
 	}
 	Smtp struct {
 		Identity string `yaml:"identity"`
