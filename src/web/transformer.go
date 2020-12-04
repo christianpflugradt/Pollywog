@@ -7,7 +7,7 @@ import (
 )
 
 func toDomainObject(request PollRequest) model.Poll {
-	deadline, err := time.Parse("20060102", request.Deadline)
+	deadline, err := time.Parse("2006-01-02", request.Deadline)
 	if err != nil {
 		fmt.Print(err)
 	}
@@ -31,7 +31,7 @@ func mapParticipantRequests(request PollRequest) []model.Participant {
 }
 
 func toPollResponse(poll model.Poll) PollResponse {
-	deadline := poll.Deadline.Format("20060102")
+	deadline := poll.Deadline.Format("2006-01-02")
 	return PollResponse{
 		Version: model.Version,
 		ID: poll.ID,
