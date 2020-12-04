@@ -46,6 +46,7 @@ func (db *Database) sqlSelectPoll(secret string) model.Poll {
 		Description: description,
 		Deadline: deadline,
 		Participants: db.selectPollParticipants(id),
+		Options: db.selectPollOptions(id),
 	}
 }
 
@@ -65,4 +66,22 @@ func (db *Database) selectPollParticipants(id int) []model.Participant {
 		participants = append(participants, model.Participant{ ID: id, Name: name })
 	}
 	return participants
+}
+
+func (db *Database) selectPollOptions(id int) []model.PollOption {
+	rows, err := db.con.Query("SELECT id, participant_id, text FROM option_in_poll WHERE poll_id = ? ORDER BY id", id)
+	if err != nil {
+		fmt.Print(err)
+	}
+	options := make([]model.PollOption, 0)
+	for rows.Next() {
+		var id, participantId int
+		var text string
+		err := rows.Scan(&id, &participantId, &text)
+		if err != nil {
+			fmt.Print(err)
+		}
+		options = append(options, model.PollOption { ID: id, ParticipantID: participantId, Text: text })
+	}
+	return options
 }

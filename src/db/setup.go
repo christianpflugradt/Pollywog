@@ -2,7 +2,8 @@ package db
 
 func SetupTables(db Database) {
 	setupTablePoll(db)
-	setupTableParticipantsInPoll(db)
+	setupTableParticipantInPoll(db)
+	setupTableOptionInPoll(db)
 }
 
 func setupTablePoll(db Database) {
@@ -17,7 +18,7 @@ func setupTablePoll(db Database) {
 	`)
 }
 
-func setupTableParticipantsInPoll(db Database) {
+func setupTableParticipantInPoll(db Database) {
 	db.executeDdl(`
 		CREATE TABLE IF NOT EXISTS participant_in_poll (
 			id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -25,6 +26,18 @@ func setupTableParticipantsInPoll(db Database) {
 			displayname VARCHAR(50) NOT NULL,
 			mail VARCHAR(50) NOT NULL,
 			secret VARCHAR(64) NOT NULL,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+		)
+	`)
+}
+
+func setupTableOptionInPoll(db Database) {
+	db.executeDdl(`
+		CREATE TABLE IF NOT EXISTS options_in_poll (
+			id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+			poll_id INT UNSIGNED NOT NULL,
+			participant_id INT UNSIGNED NOT NULL,
+			text VARCHAR(255) NOT NULL,
 			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 		)
 	`)

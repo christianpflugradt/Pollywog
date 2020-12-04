@@ -16,6 +16,10 @@ type Config struct {
 		Port string `yaml:"port"`
 		Admintoken string `yaml:"admintoken"`
 	}
+	Database struct {
+		Driver string `yaml:"driver"`
+		DataSourceName string `yaml:"dataSourceName"`
+	}
 	Smtp struct {
 		Identity string `yaml:"identity"`
 		User string `yaml:"user"`
