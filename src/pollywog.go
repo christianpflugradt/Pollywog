@@ -2,6 +2,7 @@ package main
 
 import (
 	"pollywog/db"
+	sys "pollywog/system"
 	"pollywog/web"
 )
 
@@ -14,7 +15,8 @@ func prepareDatabase() {
 	database := db.Database{}
 	defer database.Disconnect()
 	database.Connect()
-	if database.IsSqlite3 {
+	var config *sys.Config
+	if config.Get().Database.Driver == "sqlite3" {
 		db.SetupTablesSqlite(database)
 	} else {
 		db.SetupTables(database)

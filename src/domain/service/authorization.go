@@ -4,12 +4,20 @@ import (
 	"crypto/sha512"
 	"encoding/hex"
 	"math/rand"
+	"pollywog/db"
 	"pollywog/domain/model"
 	"pollywog/system"
 	"time"
 )
 
 const secretSize = 64
+
+func ResolveParticipant(secret string) (int, int) {
+	con := db.Database{}
+	defer con.Disconnect()
+	con.Connect()
+	return con.IdentifyParticipant(Hash(secret))
+}
 
 func supplySecrets(participants []model.Participant) {
 	rand.Seed(time.Now().UnixNano())

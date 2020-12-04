@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"pollywog/domain/service"
 	sys "pollywog/system"
+	"pollywog/web/representation"
+	"pollywog/web/transformer"
 )
 
 func multiPoll(w http.ResponseWriter, r *http.Request) {
@@ -23,13 +25,13 @@ func multiPoll(w http.ResponseWriter, r *http.Request) {
 
 func postPoll(w http.ResponseWriter, r *http.Request) {
 	if service.IsVerifiedAdmin(r.Header.Get("Authorization")) {
-		var request PollRequest
+		var request representation.PollRequest
 		err := json.NewDecoder(r.Body).Decode(&request)
 		if err == nil {
-			poll := toDomainObject(request)
+			poll := transformer.TransformPollRequest(request)
 			if service.IsValidForCreation(poll) {
 				createdPoll := service.CreatePoll(poll)
-				response := toPollResponse(createdPoll)
+				response := transformer.TransformDomainPoll(createdPoll)
 				err = json.NewEncoder(w).Encode(response)
 				if err != nil {
 					fmt.Print(err)
@@ -49,7 +51,7 @@ func postPoll(w http.ResponseWriter, r *http.Request) {
 func getPoll(w http.ResponseWriter, r *http.Request) {
 	poll, valid := service.ReadPoll(r.Header.Get("Authorization"))
 	if valid {
-		response := toPollResponse(poll)
+		response := transformer.TransformDomainPoll(poll)
 		err := json.NewEncoder(w).Encode(response)
 		if err != nil {
 			fmt.Print(err)
@@ -61,7 +63,21 @@ func getPoll(w http.ResponseWriter, r *http.Request) {
 
 func postOptions(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
-		w.WriteHeader(http.StatusAccepted)
+		var request representation.OptionsRequest
+		err := json.NewDecoder(r.Body).Decode(&request)
+		if err == nil {
+			pollId, participantId := service.ResolveParticipant(r.Header.Get("Authorization"))
+			options := transformer.TransformOptionsRequest(pollId, participantId, request)
+			valid := service.UpdatePollOptions(participantId, options)
+			if valid {
+				w.WriteHeader(http.StatusAccepted)
+			} else {
+				w.WriteHeader(http.StatusUnprocessableEntity)
+			}
+		} else {
+			fmt.Print(err)
+			w.WriteHeader(http.StatusBadRequest)
+		}
 	} else if r.Method == http.MethodOptions {
 		w.WriteHeader(http.StatusOK)
 	} else {

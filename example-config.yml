@@ -4,6 +4,11 @@ server:
   port: 9999
   # exemplatory token: change it for your configuration!
   admintoken: KA6QxuATPx40RlTBBMUaWFTM39beUrVQckfHJ4D65cbzCIvFSi3cZiBos1M25U9pUCwRHX6UBW4abB5ebRT6Xyvzx9mg0p9edUV4eRabt1bd5sIZsdsdP6mUhV6UfSuP
+database:
+  driver: sqlite3
+  # driver: mysql
+  dataSourceName: /tmp/pollywog.db
+  # dataSourceName: user:password@pollywog
 smtp:
   identity:
   user: noreply@example.xyz
