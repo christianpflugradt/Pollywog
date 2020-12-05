@@ -16,3 +16,12 @@ func IntSliceToString(intSlice []int, separator string) string {
 	}
 	return result
 }
+
+func IntInSlice(intSlice []int, value int) bool {
+	for _, item := range intSlice {
+		if item == value {
+			return true
+		}
+	}
+	return false
+}

@@ -11,4 +11,5 @@ type Poll struct {
 	Deadline    time.Time
 	Participants []Participant
 	Options []PollOption
+	Votes []PollOptionVote
 }

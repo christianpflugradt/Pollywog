@@ -72,3 +72,19 @@ func (db *Database) VerifyParticipantOwnsOptions(participantId int, optionIds []
 func (db *Database) UpdatePollOptions(participantId int, options []model.PollOption) {
 	db.sqlUpsertPollOptions(participantId, options)
 }
+
+func (db *Database) VerifyOptionsExist(pollId int, optionIds []int) bool {
+	if len(optionIds) > 0 {
+		return db.sqlVerifyOptionsExist(pollId, optionIds)
+	} else {
+		return true
+	}
+}
+
+func (db *Database) DeleteObsoleteVotes(pollId int, participantId int, votes []model.PollOptionVote) {
+	db.sqlDeleteObsoleteVotes(pollId, participantId, votes)
+}
+
+func (db *Database) InsertNewVotes(pollId int, participantId int, votes []model.PollOptionVote) {
+	db.sqlInsertNewVotes(pollId, participantId, votes)
+}
