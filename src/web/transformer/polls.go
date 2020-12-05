@@ -31,5 +31,6 @@ func pollToRepresentation(poll model.Poll) representation.PollResponse {
 		Deadline: deadline,
 		Participants: participantsToRepresentation(poll),
 		Options: optionsToRepresentation(poll),
+		Votes: votesToRepresentation(poll),
 	}
 }

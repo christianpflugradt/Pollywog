@@ -23,7 +23,7 @@ func (db *Database) sqlDeleteObsoleteVotes(pollId int, participantId int, votes 
 }
 
 func (db *Database) sqlInsertNewVotes(pollId int, participantId int, votes []model.PollOptionVote) {
-	optionIdsVoted := db.selectPollOptionVotes(pollId, participantId)
+	optionIdsVoted := db.selectOptionIdsFromVotes(pollId, participantId)
 	votesToBeCreated := make([]model.PollOptionVote, 0)
 	for _, vote := range votes {
 		if !util.IntInSlice(optionIdsVoted, vote.PollOptionID) {
@@ -40,7 +40,7 @@ func (db *Database) sqlInsertNewVotes(pollId int, participantId int, votes []mod
 	}
 }
 
-func (db *Database) selectPollOptionVotes(pollId int, participantId int) []int {
+func (db *Database) selectOptionIdsFromVotes(pollId int, participantId int) []int {
 	rows, err := db.con.Query(`
 		SELECT option_id FROM vote_in_poll 
 		WHERE poll_id = ? 

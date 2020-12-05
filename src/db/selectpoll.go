@@ -47,6 +47,7 @@ func (db *Database) sqlSelectPoll(secret string) model.Poll {
 		Deadline: deadline,
 		Participants: db.selectPollParticipants(id),
 		Options: db.selectPollOptions(id),
+		Votes: db.selectPollOptionVotes(id),
 	}
 }
 
@@ -84,4 +85,21 @@ func (db *Database) selectPollOptions(id int) []model.PollOption {
 		options = append(options, model.PollOption { ID: id, ParticipantID: participantId, Text: text })
 	}
 	return options
+}
+
+func (db *Database) selectPollOptionVotes(id int) []model.PollOptionVote {
+	rows, err := db.con.Query("SELECT option_id, participant_id, weight FROM vote_in_poll WHERE poll_id = ? ORDER BY id", id)
+	if err != nil {
+		fmt.Print(err)
+	}
+	votes := make([]model.PollOptionVote, 0)
+	for rows.Next() {
+		var optionId, participantId, weight int
+		err := rows.Scan(&optionId, &participantId, &weight)
+		if err != nil {
+			fmt.Print(err)
+		}
+		votes = append(votes, model.PollOptionVote { PollOptionID: id, ParticipantID: participantId, Weight: weight })
+	}
+	return votes
 }
