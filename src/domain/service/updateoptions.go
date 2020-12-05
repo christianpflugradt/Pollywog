@@ -5,7 +5,7 @@ import (
 	"pollywog/domain/model"
 )
 
-func UpdatePollOptions(participantId int, options []model.PollOption) bool {
+func UpdatePollOptions(pollId int, participantId int, options []model.PollOption) bool {
 	if len(options) == 0 {
 		return true
 	}
@@ -19,7 +19,7 @@ func UpdatePollOptions(participantId int, options []model.PollOption) bool {
 		}
 	}
 	if con.VerifyParticipantOwnsOptions(participantId, optionIds) {
-		con.UpdatePollOptions(participantId, options)
+		con.UpdatePollOptions(pollId, participantId, options)
 		return true
 	} else {
 		return false
