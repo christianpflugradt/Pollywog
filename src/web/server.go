@@ -70,7 +70,7 @@ func postOptions(w http.ResponseWriter, r *http.Request) {
 			options := transformer.TransformOptionsRequest(pollId, participantId, request)
 			valid := service.UpdatePollOptions(participantId, options)
 			if valid {
-				w.WriteHeader(http.StatusAccepted)
+				getPoll(w, r)
 			} else {
 				w.WriteHeader(http.StatusUnprocessableEntity)
 			}
