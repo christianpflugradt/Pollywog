@@ -16,3 +16,7 @@ func TransformDomainPoll(poll model.Poll) representation.PollResponse {
 func TransformOptionsRequest(pollId int, participantId int, request representation.OptionsRequest) []model.PollOption {
 	return optionsToDomain(pollId, participantId, request)
 }
+
+func TransformVotesRequest(participantId int, request representation.VotesRequest) []model.PollOptionVote {
+	return votesToDomain(participantId, request)
+}

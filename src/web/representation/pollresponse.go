@@ -9,6 +9,7 @@ type PollResponse struct {
 	Deadline    string                `json:"deadline"`
 	Participants []ParticipantResponse `json:"participants"`
 	Options []OptionResponse `json:"options"`
+	Votes []VoteResponse `json:"votes"`
 }
 
 type ParticipantResponse struct {
@@ -20,4 +21,10 @@ type OptionResponse struct {
 	ID int `json:"id"`
 	ParticipantID int `json:"participant_id"`
 	Text string `json:"text"`
+}
+
+type VoteResponse struct {
+	OptionID int `json:"option_id"`
+	ParticipantID int `json:"participant_id"`
+	Weight int `json:"weight"`
 }

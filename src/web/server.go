@@ -87,7 +87,21 @@ func postOptions(w http.ResponseWriter, r *http.Request) {
 
 func postVotes(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
-		w.WriteHeader(http.StatusAccepted)
+		var request representation.VotesRequest
+		err := json.NewDecoder(r.Body).Decode(&request)
+		if err == nil {
+			pollId, participantId := service.ResolveParticipant(r.Header.Get("Authorization"))
+			votes := transformer.TransformVotesRequest(participantId, request)
+			valid := service.UpdatePollOptionVotes(pollId, votes)
+			if valid {
+				getPoll(w, r)
+			} else {
+				w.WriteHeader(http.StatusUnprocessableEntity)
+			}
+		} else {
+			fmt.Print(err)
+			w.WriteHeader(http.StatusBadRequest)
+		}
 	} else if r.Method == http.MethodOptions {
 		w.WriteHeader(http.StatusOK)
 	} else {
