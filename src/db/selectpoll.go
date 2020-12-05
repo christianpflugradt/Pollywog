@@ -99,7 +99,7 @@ func (db *Database) selectPollOptionVotes(id int) []model.PollOptionVote {
 		if err != nil {
 			fmt.Print(err)
 		}
-		votes = append(votes, model.PollOptionVote { PollOptionID: id, ParticipantID: participantId, Weight: weight })
+		votes = append(votes, model.PollOptionVote { PollOptionID: optionId, ParticipantID: participantId, Weight: weight })
 	}
 	return votes
 }
