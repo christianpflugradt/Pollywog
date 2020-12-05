@@ -7,6 +7,7 @@ type PollResponse struct {
 	Title       string                `json:"title"`
 	Description string                `json:"description"`
 	Deadline    string                `json:"deadline"`
+	Open bool `json:"open"`
 	Participants []ParticipantResponse `json:"participants"`
 	Options []OptionResponse `json:"options"`
 	Votes []VoteResponse `json:"votes"`

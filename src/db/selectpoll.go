@@ -21,6 +21,7 @@ func (db *Database) sqlSelectPollById(id int) model.Poll {
 		Title: title,
 		Description: description,
 		Deadline: deadline,
+		Open: deadline.After(time.Now()),
 		Participants: db.selectPollParticipants(id),
 	}
 }
@@ -44,6 +45,7 @@ func (db *Database) sqlSelectPoll(secret string) model.Poll {
 		RequesterID: requesterId,
 		Title: title,
 		Description: description,
+		Open: deadline.After(time.Now()),
 		Deadline: deadline,
 		Participants: db.selectPollParticipants(id),
 		Options: db.selectPollOptions(id),

@@ -16,3 +16,11 @@ func ReadPoll(secret string) (model.Poll, bool) {
 		return poll, false
 	}
 }
+
+func isPollOpen(pollId int) bool {
+	con := db.Database{}
+	defer con.Disconnect()
+	con.Connect()
+	poll := con.SelectPollById(pollId)
+	return poll.Open
+}
