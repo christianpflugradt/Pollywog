@@ -18,8 +18,11 @@ func (db *Database) deleteObsoleteOptions(pollId int, participantId int, options
 			existingOptions = append(existingOptions, item.ID)
 		}
 	}
-	inClause := "(" + util.IntSliceToString(existingOptions, ",") + ")"
-	_, err := db.con.Exec("DELETE FROM option_in_poll WHERE participant_id = ? AND id NOT IN " + inClause, participantId)
+	inClause := ""
+	if len(options) > 0 {
+		inClause = " AND id NOT IN (" + util.IntSliceToString(existingOptions, ",") + ")"
+	}
+	_, err := db.con.Exec("DELETE FROM option_in_poll WHERE participant_id = ? " + inClause, participantId)
 	if err != nil {
 		fmt.Print(err)
 	}

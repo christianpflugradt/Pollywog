@@ -6,8 +6,8 @@ import (
 )
 
 func UpdatePollOptionVotes(pollId int, votes []model.PollOptionVote) bool {
-	if len(votes) == 0 {
-		return true
+	if !isPollOpen(pollId) {
+		return false
 	}
 	con := db.Database{}
 	defer con.Disconnect()
