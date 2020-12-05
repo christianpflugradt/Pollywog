@@ -68,7 +68,7 @@ func postOptions(w http.ResponseWriter, r *http.Request) {
 		if err == nil {
 			pollId, participantId := service.ResolveParticipant(r.Header.Get("Authorization"))
 			options := transformer.TransformOptionsRequest(pollId, participantId, request)
-			valid := service.UpdatePollOptions(participantId, options)
+			valid := service.UpdatePollOptions(pollId, participantId, options)
 			if valid {
 				getPoll(w, r)
 			} else {

@@ -69,8 +69,8 @@ func (db *Database) VerifyParticipantOwnsOptions(participantId int, optionIds []
 	}
 }
 
-func (db *Database) UpdatePollOptions(participantId int, options []model.PollOption) {
-	db.sqlUpsertPollOptions(participantId, options)
+func (db *Database) UpdatePollOptions(pollId int, participantId int, options []model.PollOption) {
+	db.sqlUpsertPollOptions(pollId, participantId, options)
 }
 
 func (db *Database) VerifyOptionsExist(pollId int, optionIds []int) bool {

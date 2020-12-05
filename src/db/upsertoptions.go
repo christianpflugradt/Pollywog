@@ -6,12 +6,12 @@ import (
 	"pollywog/util"
 )
 
-func (db *Database) sqlUpsertPollOptions(participantId int, options []model.PollOption) {
-	db.deleteObsoleteOptions(participantId, options)
+func (db *Database) sqlUpsertPollOptions(pollId int, participantId int, options []model.PollOption) {
+	db.deleteObsoleteOptions(pollId, participantId, options)
 	db.createNewOptions(options)
 }
 
-func (db *Database) deleteObsoleteOptions(participantId int, options []model.PollOption) {
+func (db *Database) deleteObsoleteOptions(pollId int, participantId int, options []model.PollOption) {
 	existingOptions := make([]int, 0)
 	for _, item := range options {
 		if !item.New {
@@ -20,6 +20,16 @@ func (db *Database) deleteObsoleteOptions(participantId int, options []model.Pol
 	}
 	inClause := "(" + util.IntSliceToString(existingOptions, ",") + ")"
 	_, err := db.con.Exec("DELETE FROM option_in_poll WHERE participant_id = ? AND id NOT IN " + inClause, participantId)
+	if err != nil {
+		fmt.Print(err)
+	}
+	_, err = db.con.Exec(`
+			DELETE FROM vote_in_poll
+			WHERE poll_id = ?
+			AND participant_id = ?
+			AND NOT EXISTS
+			(SELECT id FROM option_in_poll
+			WHERE id = vote_in_poll.option_id)`, pollId, participantId)
 	if err != nil {
 		fmt.Print(err)
 	}
