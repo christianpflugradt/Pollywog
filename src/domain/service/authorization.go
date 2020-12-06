@@ -19,12 +19,13 @@ func ResolveParticipant(secret string) (int, int) {
 	return con.IdentifyParticipant(Hash(secret))
 }
 
-func supplySecrets(participants []model.Participant) {
+func supplySecrets(poll model.Poll) {
 	rand.Seed(time.Now().UnixNano())
+	participants := poll.Participants
 	for index, _ := range participants {
 		unhashed := randomString()
 		participants[index].Secret = Hash(unhashed)
-		notifyParticipant(participants[index], unhashed)
+		notifyParticipant(poll, participants[index], unhashed)
 	}
 }
 
@@ -43,12 +44,17 @@ func randomString() string {
 	return string(bytes)
 }
 
-func notifyParticipant(participant model.Participant, unhashed string) {
+func notifyParticipant(poll model.Poll, participant model.Participant, unhashed string) {
 	var config *sys.Config
 	to := []string{participant.Mail}
 	msg := []byte("To: " + participant.Mail +
-		"\r\nSubject: invitation to poll\r\n\r\n" +
-		config.Get().Client.BaseUrl + unhashed + "\r\n")
+		"\r\nSubject: invitation to poll: " + poll.Title + "\r\n\r\n" +
+		"Hi, " + participant.Name + "!\r\n" +
+		"you are invited to participate in a poll.\r\n\r\n" +
+		"Title: " + poll.Title + "\r\n" +
+		"Description: " + poll.Description + "\r\n\r\n" +
+		"Use the following link to participate: " + config.Get().Client.BaseUrl + unhashed + "\r\n\r\n" +
+		"Best regards,\r\nPollywog")
 	sys.SendMail(to, msg)
 }
 
