@@ -25,3 +25,13 @@ func IntInSlice(intSlice []int, value int) bool {
 	}
 	return false
 }
+
+func MaskMail(email string) string {
+	emailSlice := strings.Split(email, "@")
+	if len(emailSlice) > 1 {
+		mask := strings.Repeat("X", len(emailSlice[0]))
+		return mask + "@" + emailSlice[1]
+	} else {
+		return email
+	}
+}
