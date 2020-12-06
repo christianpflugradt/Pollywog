@@ -3,6 +3,7 @@ package db
 import (
 	"fmt"
 	"pollywog/domain/model"
+	"pollywog/util"
 )
 
 func (db *Database) sqlInsertPoll(poll model.Poll) int {
@@ -25,7 +26,7 @@ func (db *Database) insertPollParticipants(id int, poll model.Poll) {
 	for _, participant := range poll.Participants {
 		_, err := db.con.Exec(`INSERT INTO participant_in_poll 
 				(poll_id, displayname, mail, secret) VALUES (?, ?, ?, ?)`,
-			id, participant.Name, participant.Mail, participant.Secret)
+			id, participant.Name, util.MaskMail(participant.Mail), participant.Secret)
 		if err != nil {
 			fmt.Print(err)
 		}
