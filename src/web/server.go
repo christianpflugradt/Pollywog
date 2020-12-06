@@ -67,12 +67,16 @@ func postOptions(w http.ResponseWriter, r *http.Request) {
 		err := json.NewDecoder(r.Body).Decode(&request)
 		if err == nil {
 			pollId, participantId := service.ResolveParticipant(r.Header.Get("Authorization"))
-			options := transformer.TransformOptionsRequest(pollId, participantId, request)
-			valid := service.UpdatePollOptions(pollId, participantId, options)
-			if valid {
-				getPoll(w, r)
+			if pollId != -1 {
+				options := transformer.TransformOptionsRequest(pollId, participantId, request)
+				valid := service.UpdatePollOptions(pollId, participantId, options)
+				if valid {
+					getPoll(w, r)
+				} else {
+					w.WriteHeader(http.StatusUnprocessableEntity)
+				}
 			} else {
-				w.WriteHeader(http.StatusUnprocessableEntity)
+				w.WriteHeader(http.StatusUnauthorized)
 			}
 		} else {
 			fmt.Print(err)
@@ -91,12 +95,16 @@ func postVotes(w http.ResponseWriter, r *http.Request) {
 		err := json.NewDecoder(r.Body).Decode(&request)
 		if err == nil {
 			pollId, participantId := service.ResolveParticipant(r.Header.Get("Authorization"))
-			votes := transformer.TransformVotesRequest(participantId, request)
-			valid := service.UpdatePollOptionVotes(pollId, votes)
-			if valid {
-				getPoll(w, r)
+			if pollId != -1 {
+				votes := transformer.TransformVotesRequest(participantId, request)
+				valid := service.UpdatePollOptionVotes(pollId, votes)
+				if valid {
+					getPoll(w, r)
+				} else {
+					w.WriteHeader(http.StatusUnprocessableEntity)
+				}
 			} else {
-				w.WriteHeader(http.StatusUnprocessableEntity)
+				w.WriteHeader(http.StatusUnauthorized)
 			}
 		} else {
 			fmt.Print(err)
