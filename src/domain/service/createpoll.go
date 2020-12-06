@@ -40,7 +40,7 @@ func isDeadlineValid(poll model.Poll) bool {
 }
 
 func CreatePoll(poll model.Poll) model.Poll {
-	supplySecrets(poll.Participants)
+	supplySecrets(poll)
 	con := db.Database{}
 	defer con.Disconnect()
 	con.Connect()
