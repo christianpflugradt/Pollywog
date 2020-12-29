@@ -5,6 +5,7 @@ func SetupTablesSqlite(db Database) {
 	setupTableParticipantInPollSqlite(db)
 	setupTableOptionInPollSqlite(db)
 	setupTableVoteInPollSqlite(db)
+	setupTablePollParamsSqlite(db)
 }
 
 func setupTablePollSqlite(db Database) {
@@ -52,6 +53,18 @@ func setupTableVoteInPollSqlite(db Database) {
 			option_id INTEGER NOT NULL,
 			participant_id INTEGER NOT NULL,
 			weight INTEGER NOT NULL,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+		)
+	`)
+}
+
+func setupTablePollParamsSqlite(db Database) {
+	db.executeDdl(`
+		CREATE TABLE IF NOT EXISTS poll_params (
+			id INTEGER NOT NULL PRIMARY KEY,
+			poll_id INT UNSIGNED NOT NULL,
+			paramkey TEXT NOT NULL,
+			paramvalue TEXT NOT NULL,
 			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 		)
 	`)

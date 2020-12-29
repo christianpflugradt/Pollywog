@@ -11,6 +11,7 @@ type PollResponse struct {
 	Participants []ParticipantResponse `json:"participants"`
 	Options []OptionResponse `json:"options"`
 	Votes []VoteResponse `json:"votes"`
+	Params ParamsResponse `json:"params"`
 }
 
 type ParticipantResponse struct {
@@ -28,4 +29,9 @@ type VoteResponse struct {
 	OptionID int `json:"option_id"`
 	ParticipantID int `json:"participant_id"`
 	Weight int `json:"weight"`
+}
+
+type ParamsResponse struct {
+	OptionsPerParticipant int `json:"optionsPerParticipant"`
+	VotesPerParticipant int `json:"votesPerParticipant"`
 }

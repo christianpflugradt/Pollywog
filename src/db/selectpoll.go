@@ -23,6 +23,7 @@ func (db *Database) sqlSelectPollById(id int) model.Poll {
 		Deadline: deadline,
 		Open: deadline.After(time.Now()),
 		Participants: db.selectPollParticipants(id),
+		Params: db.selectPollParams(id),
 	}
 }
 
@@ -50,6 +51,7 @@ func (db *Database) sqlSelectPoll(secret string) model.Poll {
 		Participants: db.selectPollParticipants(id),
 		Options: db.selectPollOptions(id),
 		Votes: db.selectPollOptionVotes(id),
+		Params: db.selectPollParams(id),
 	}
 }
 
@@ -104,4 +106,33 @@ func (db *Database) selectPollOptionVotes(id int) []model.PollOptionVote {
 		votes = append(votes, model.PollOptionVote { PollOptionID: optionId, ParticipantID: participantId, Weight: weight })
 	}
 	return votes
+}
+
+func (db *Database) selectPollParams(id int) model.PollParams {
+	return model.PollParams{
+		OptionsPerParticipant: db.selectOptionsPerParticipant(id),
+		VotesPerParticipant: db.selectVotesPerParticipant(id),
+	}
+}
+
+func (db *Database) selectOptionsPerParticipant(id int) int {
+	var optionsPerParticipant int
+	err := db.con.QueryRow("SELECT paramvalue FROM poll_params WHERE poll_id = ? AND paramkey = ?",
+		id, model.OptionsPerParticipant).Scan(&optionsPerParticipant)
+	if err != nil {
+		optionsPerParticipant = 999
+		fmt.Print(err)
+	}
+	return optionsPerParticipant
+}
+
+func (db *Database) selectVotesPerParticipant(id int) int {
+	var votesPerParticipant int
+	err := db.con.QueryRow("SELECT paramvalue FROM poll_params WHERE poll_id = ? AND paramkey = ?",
+		id, model.VotesPerParticipant).Scan(&votesPerParticipant)
+	if err != nil {
+		votesPerParticipant = 999
+		fmt.Print(err)
+	}
+	return votesPerParticipant
 }
