@@ -18,10 +18,10 @@ func UpdatePollOptions(pollId int, participantId int, options []model.PollOption
 			optionIds = append(optionIds, option.ID)
 		}
 	}
-	if con.VerifyParticipantOwnsOptions(participantId, optionIds) {
+	valid := con.VerifyParticipantOwnsOptions(participantId, optionIds) &&
+		con.VerifyNumberOfOptionsNotExceeded(pollId, options)
+	if valid {
 		con.UpdatePollOptions(pollId, participantId, options)
-		return true
-	} else {
-		return false
 	}
+	return valid
 }

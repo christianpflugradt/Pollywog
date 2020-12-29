@@ -12,4 +12,5 @@ type Poll struct {
 	Participants []Participant
 	Options []PollOption
 	Votes []PollOptionVote
+	Params PollParams
 }

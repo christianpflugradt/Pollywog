@@ -5,6 +5,7 @@ func SetupTables(db Database) {
 	setupTableParticipantInPoll(db)
 	setupTableOptionInPoll(db)
 	setupTableVoteInPoll(db)
+	setupTablePollParams(db)
 }
 
 func setupTablePoll(db Database) {
@@ -52,6 +53,18 @@ func setupTableVoteInPoll(db Database) {
 			option_id INT UNSIGNED NOT NULL,
 			participant_id INT UNSIGNED NOT NULL,
 			weight INT UNSIGNED NOT NULL,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+		)
+	`)
+}
+
+func setupTablePollParams(db Database) {
+	db.executeDdl(`
+		CREATE TABLE IF NOT EXISTS poll_params (
+			id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+			poll_id INT UNSIGNED NOT NULL,
+			paramkey VARCHAR(50) NOT NULL,
+			paramvalue VARCHAR(255) NOT NULL,
 			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 		)
 	`)

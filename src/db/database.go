@@ -81,6 +81,18 @@ func (db *Database) VerifyOptionsExist(pollId int, optionIds []int) bool {
 	}
 }
 
+func (db *Database) VerifyNumberOfOptionsNotExceeded(pollId int, options []model.PollOption) bool {
+	return len(options) <= db.selectOptionsPerParticipant(pollId)
+}
+
+func (db *Database) VerifyNumberOfVotesNotExceeded(pollId int, votes []model.PollOptionVote) bool {
+	count := 0
+	for _, vote := range votes {
+		count += vote.Weight
+	}
+	return count <= db.selectVotesPerParticipant(pollId)
+}
+
 func (db *Database) DeleteObsoleteVotes(pollId int, participantId int, votes []model.PollOptionVote) {
 	db.sqlDeleteObsoleteVotes(pollId, participantId, votes)
 }

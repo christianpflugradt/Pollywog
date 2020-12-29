@@ -17,6 +17,7 @@ func pollToDomain(request representation.PollRequest) model.Poll {
 		Description:  request.Description,
 		Deadline:     deadline,
 		Participants: participantsToDomain(request),
+		Params: paramsToDomain(request),
 	}
 }
 
@@ -33,5 +34,6 @@ func pollToRepresentation(poll model.Poll) representation.PollResponse {
 		Participants: participantsToRepresentation(poll),
 		Options: optionsToRepresentation(poll),
 		Votes: votesToRepresentation(poll),
+		Params: paramsToRepresentation(poll),
 	}
 }

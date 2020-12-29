@@ -17,11 +17,10 @@ func UpdatePollOptionVotes(pollId int, votes []model.PollOptionVote) bool {
 		optionIds[index] = vote.PollOptionID
 	}
 	participantId := votes[0].ParticipantID
-	if con.VerifyOptionsExist(pollId, optionIds) {
+	valid := con.VerifyOptionsExist(pollId, optionIds) && con.VerifyNumberOfVotesNotExceeded(pollId, votes)
+	if valid {
 		con.DeleteObsoleteVotes(pollId, participantId, votes)
 		con.InsertNewVotes(pollId, participantId, votes)
-		return true
-	} else {
-		return false
 	}
+	return valid
 }
