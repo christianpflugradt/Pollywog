@@ -48,8 +48,9 @@ func notifyParticipant(poll model.Poll, participant model.Participant, unhashed 
 	var config *sys.Config
 	to := []string{participant.Mail}
 	msg := []byte("To: " + participant.Mail +
-		"\r\nSubject: invitation to poll: " + poll.Title + "\r\n\r\n" +
-		"Hi, " + participant.Name + "!\r\n" +
+		"\r\nContent-Type: text/plain; charset=\"UTF-8\";\r\n" +
+		"Subject: invitation to poll: " + poll.Title + "\r\n\r\n" +
+		"Hi,漢ж\U0001F976 " + participant.Name + "!\r\n" +
 		"you are invited to participate in a poll.\r\n\r\n" +
 		"Title: " + poll.Title + "\r\n" +
 		"Description: " + poll.Description + "\r\n\r\n" +
