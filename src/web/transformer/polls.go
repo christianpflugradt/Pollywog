@@ -1,17 +1,15 @@
 package transformer
 
 import (
-	"fmt"
 	"pollywog/domain/model"
+	"pollywog/util"
 	"pollywog/web/representation"
 	"time"
 )
 
 func pollToDomain(request representation.PollRequest) model.Poll {
 	deadline, err := time.Parse("2006-01-02", request.Deadline)
-	if err != nil {
-		fmt.Print(err)
-	}
+	util.HandleError(util.ErrorLogEvent{ Function: "transformer.PollToDomain", Error: err })
 	return model.Poll{
 		Title:        request.Title,
 		Description:  request.Description,

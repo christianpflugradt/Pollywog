@@ -192,9 +192,9 @@ func postOptions(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusUnauthorized)
 			}
 		} else {
-			fmt.Print(err)
 			w.WriteHeader(http.StatusBadRequest)
 		}
+		util.HandleError(util.ErrorLogEvent{ Function: "web.postOptions", Error: err })
 	} else if r.Method == http.MethodOptions {
 		w.WriteHeader(http.StatusOK)
 	} else {

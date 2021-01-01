@@ -2,11 +2,11 @@ package db
 
 import (
 	"database/sql"
-	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/mattn/go-sqlite3"
 	"pollywog/domain/model"
 	sys "pollywog/system"
+	"pollywog/util"
 )
 
 type Database struct {
@@ -17,34 +17,28 @@ func (db *Database) Connect() {
 	var config *sys.Config
 	var err error
 	db.con, err = sql.Open(config.Get().Database.Driver, config.Get().Database.DataSourceName)
-	if err != nil {
-		fmt.Print(err)
-	}
+	util.HandleError(util.ErrorLogEvent{ Function: "db.Connect", Error: err })
 }
 
 func (db *Database) Disconnect() {
 	err := db.con.Close()
-	if err != nil {
-		fmt.Print(err)
-	}
+	util.HandleError(util.ErrorLogEvent{ Function: "db.Disconnect", Error: err })
 	db.con = nil
 }
 
 func (db *Database) executeDdl(tableSql string) {
 	_, err := db.con.Exec(tableSql)
-	if err != nil {
-		fmt.Print(err)
-	}
+	util.HandleError(util.ErrorLogEvent{ Function: "db.executeDdl", Error: err })
 }
 
 func (db *Database) IdentifyParticipant(hashed string) (int, int) {
 	var pollId, participantId int
 	err := db.con.QueryRow("SELECT poll_id, id FROM participant_in_poll WHERE secret = ?",
 		hashed).Scan(&pollId, &participantId)
+	util.HandleError(util.ErrorLogEvent{ Function: "db.IdentifyParticipant", Error: err })
 	if err != nil {
 		pollId = -1
 		participantId = -1
-		fmt.Print(err)
 	}
 	return pollId, participantId
 }
