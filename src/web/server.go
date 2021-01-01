@@ -93,7 +93,7 @@ func postVotes(w http.ResponseWriter, r *http.Request) {
 			pollId, participantId := service.ResolveParticipant(r.Header.Get("Authorization"))
 			if pollId != -1 {
 				votes := transformer.TransformVotesRequest(participantId, request)
-				valid := service.UpdatePollOptionVotes(pollId, votes)
+				valid := service.UpdatePollOptionVotes(pollId, participantId, votes)
 				if valid {
 					util.HandleInfo(util.InfoLogEvent{ Function: "web.postVotes", Message: "votes updated"})
 					getPoll(w, r)
