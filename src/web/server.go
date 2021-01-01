@@ -2,11 +2,10 @@ package web
 
 import (
 	"encoding/json"
-	"fmt"
-	"log"
 	"net/http"
 	"pollywog/domain/service"
 	sys "pollywog/system"
+	"pollywog/util"
 	"pollywog/web/representation"
 	"pollywog/web/transformer"
 )
@@ -31,18 +30,16 @@ func postPoll(w http.ResponseWriter, r *http.Request) {
 			poll := transformer.TransformPollRequest(request)
 			if service.IsValidForCreation(poll) {
 				createdPoll := service.CreatePoll(poll)
+				util.HandleInfo(util.InfoLogEvent{ Function: "web.postPoll", Message: "poll created"})
 				response := transformer.TransformDomainPoll(createdPoll)
 				err = json.NewEncoder(w).Encode(response)
-				if err != nil {
-					fmt.Print(err)
-				}
 			} else {
 				w.WriteHeader(http.StatusUnprocessableEntity)
 			}
 		} else {
-			fmt.Print(err)
 			w.WriteHeader(http.StatusBadRequest)
 		}
+		util.HandleError(util.ErrorLogEvent{ Function: "web.postPoll", Error: err })
 	} else {
 		w.WriteHeader(http.StatusUnauthorized)
 	}
@@ -53,9 +50,7 @@ func getPoll(w http.ResponseWriter, r *http.Request) {
 	if valid {
 		response := transformer.TransformDomainPoll(poll)
 		err := json.NewEncoder(w).Encode(response)
-		if err != nil {
-			fmt.Print(err)
-		}
+		util.HandleError(util.ErrorLogEvent{ Function: "web.getPoll", Error: err })
 	} else {
 		w.WriteHeader(http.StatusUnauthorized)
 	}
@@ -71,6 +66,7 @@ func postOptions(w http.ResponseWriter, r *http.Request) {
 				options := transformer.TransformOptionsRequest(pollId, participantId, request)
 				valid := service.UpdatePollOptions(pollId, participantId, options)
 				if valid {
+					util.HandleInfo(util.InfoLogEvent{ Function: "web.postOptions", Message: "options updated"})
 					getPoll(w, r)
 				} else {
 					w.WriteHeader(http.StatusUnprocessableEntity)
@@ -79,9 +75,9 @@ func postOptions(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusUnauthorized)
 			}
 		} else {
-			fmt.Print(err)
 			w.WriteHeader(http.StatusBadRequest)
 		}
+		util.HandleError(util.ErrorLogEvent{ Function: "web.postOptions", Error: err })
 	} else if r.Method == http.MethodOptions {
 		w.WriteHeader(http.StatusOK)
 	} else {
@@ -99,6 +95,7 @@ func postVotes(w http.ResponseWriter, r *http.Request) {
 				votes := transformer.TransformVotesRequest(participantId, request)
 				valid := service.UpdatePollOptionVotes(pollId, votes)
 				if valid {
+					util.HandleInfo(util.InfoLogEvent{ Function: "web.postVotes", Message: "votes updated"})
 					getPoll(w, r)
 				} else {
 					w.WriteHeader(http.StatusUnprocessableEntity)
@@ -107,9 +104,9 @@ func postVotes(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusUnauthorized)
 			}
 		} else {
-			fmt.Print(err)
 			w.WriteHeader(http.StatusBadRequest)
 		}
+		util.HandleError(util.ErrorLogEvent{ Function: "web.postVotes", Error: err })
 	} else if r.Method == http.MethodOptions {
 		w.WriteHeader(http.StatusOK)
 	} else {
@@ -122,5 +119,6 @@ func Serve() {
 	http.HandleFunc("/options", postOptions)
 	http.HandleFunc("/votes", postVotes)
 	var config *sys.Config
-	log.Fatal(http.ListenAndServe(":" + config.Get().Server.Port, nil))
+	err := http.ListenAndServe(":" + config.Get().Server.Port, nil)
+	util.HandleFatal(util.ErrorLogEvent{ Function: "web.Serve", Error: err })
 }

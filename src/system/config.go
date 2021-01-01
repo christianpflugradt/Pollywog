@@ -1,11 +1,11 @@
 package sys
 
 import (
-	"fmt"
 	"gopkg.in/yaml.v2"
 	_ "gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
+	"pollywog/util"
 )
 
 type Config struct {
@@ -31,12 +31,8 @@ type Config struct {
 
 func (config *Config) Get() *Config {
 	yml, err := ioutil.ReadFile(os.Args[1])
-	if err != nil {
-		fmt.Print(err)
-	}
+	util.HandleError(util.ErrorLogEvent{ Function: "config.Get", Error: err })
 	err = yaml.Unmarshal(yml, &config)
-	if err != nil {
-		fmt.Print(err)
-	}
+	util.HandleError(util.ErrorLogEvent{ Function: "config.Get", Error: err })
 	return config
 }

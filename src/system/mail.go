@@ -1,8 +1,8 @@
 package sys
 
 import (
-	"fmt"
 	"net/smtp"
+	"pollywog/util"
 )
 
 func SendMail(to []string, message []byte) {
@@ -18,7 +18,5 @@ func SendMail(to []string, message []byte) {
 		config.Get().Smtp.User,
 		to,
 		message)
-	if err != nil {
-		fmt.Print(err)
-	}
+	util.HandleError(util.ErrorLogEvent{ Function: "sys.SendMail", Error: err })
 }

@@ -1,7 +1,6 @@
 package db
 
 import (
-	"fmt"
 	"pollywog/domain/model"
 	"pollywog/util"
 )
@@ -17,9 +16,7 @@ func (db *Database) sqlDeleteObsoleteVotes(pollId int, participantId int, votes 
 		WHERE poll_id = ? 
 		AND participant_id = ?
 		AND option_id NOT IN ` + inClause, pollId, participantId)
-	if err != nil {
-		fmt.Print(err)
-	}
+	util.HandleError(util.ErrorLogEvent{ Function: "db.sqlDeleteObsoleteVotes", Error: err })
 }
 
 func (db *Database) sqlInsertNewVotes(pollId int, participantId int, votes []model.PollOptionVote) {
@@ -34,9 +31,7 @@ func (db *Database) sqlInsertNewVotes(pollId int, participantId int, votes []mod
 		_, err := db.con.Exec(`INSERT INTO vote_in_poll 
 				(poll_id, option_id, participant_id, weight) VALUES (?, ?, ?, 1)`,
 			pollId, vote.PollOptionID, vote.ParticipantID)
-		if err != nil {
-			fmt.Print(err)
-		}
+		util.HandleError(util.ErrorLogEvent{ Function: "db.sqlInsertNewVotes", Error: err })
 	}
 }
 
@@ -45,16 +40,12 @@ func (db *Database) selectOptionIdsFromVotes(pollId int, participantId int) []in
 		SELECT option_id FROM vote_in_poll 
 		WHERE poll_id = ? 
 		AND participant_id = ?`, pollId, participantId)
-	if err != nil {
-		fmt.Print(err)
-	}
+	util.HandleError(util.ErrorLogEvent{ Function: "db.selectOptionIdsFromVotes", Error: err })
 	options := make([]int, 0)
 	for rows.Next() {
 		var id int
 		err := rows.Scan(&id)
-		if err != nil {
-			fmt.Print(err)
-		}
+		util.HandleError(util.ErrorLogEvent{ Function: "db.selectOptionIdsFromVotes", Error: err })
 		options = append(options, id)
 	}
 	return options
@@ -65,8 +56,6 @@ func (db *Database) sqlVerifyOptionsExist(pollId int, optionIds []int) bool {
 	inClause := "(" + util.IntSliceToString(optionIds, ",") + ")"
 	err := db.con.QueryRow("SELECT COUNT(id) FROM option_in_poll WHERE poll_id = ? AND id IN " + inClause,
 		pollId).Scan(&count)
-	if err != nil {
-		fmt.Print(err)
-	}
+	util.HandleError(util.ErrorLogEvent{ Function: "db.sqlVerifyOptionsExist", Error: err })
 	return count == len(optionIds)
 }
