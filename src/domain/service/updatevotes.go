@@ -5,7 +5,7 @@ import (
 	"pollywog/domain/model"
 )
 
-func UpdatePollOptionVotes(pollId int, votes []model.PollOptionVote) bool {
+func UpdatePollOptionVotes(pollId int, participantId int, votes []model.PollOptionVote) bool {
 	if !isPollOpen(pollId) {
 		return false
 	}
@@ -16,7 +16,6 @@ func UpdatePollOptionVotes(pollId int, votes []model.PollOptionVote) bool {
 	for index, vote := range votes {
 		optionIds[index] = vote.PollOptionID
 	}
-	participantId := votes[0].ParticipantID
 	valid := con.VerifyOptionsExist(pollId, optionIds) && con.VerifyNumberOfVotesNotExceeded(pollId, votes)
 	if valid {
 		con.DeleteObsoleteVotes(pollId, participantId, votes)
