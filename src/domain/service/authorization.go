@@ -50,12 +50,12 @@ func notifyParticipant(poll model.Poll, participant model.Participant, unhashed 
 	msg := []byte("To: " + participant.Mail +
 		"\r\nContent-Type: text/plain; charset=\"UTF-8\";\r\n" +
 		"Subject: invitation to poll: " + poll.Title + "\r\n\r\n" +
-		"Hi,漢ж\U0001F976 " + participant.Name + "!\r\n" +
-		"you are invited to participate in a poll.\r\n\r\n" +
+		"Hi " + participant.Name + "!\r\n" +
+		"You are invited to participate in a poll.\r\n\r\n" +
 		"Title: " + poll.Title + "\r\n" +
 		"Description: " + poll.Description + "\r\n\r\n" +
 		"Use the following link to participate: " + config.Get().Client.BaseUrl + unhashed + "\r\n\r\n" +
-		"Best regards,\r\nPollywog")
+		"Best regards,\r\nPollywog \U0001F438")
 	sys.SendMail(to, msg)
 }
 
