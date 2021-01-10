@@ -10,12 +10,14 @@ func (db *Database) sqlDeleteObsoleteVotes(pollId int, participantId int, votes 
 	for index, vote := range votes {
 		optionIds[index] = vote.PollOptionID
 	}
-	inClause := "(" + util.IntSliceToString(optionIds, ",") + ")"
+	inClause := ""
+	if len(optionIds) > 0 {
+		inClause = " AND option_id NOT IN (" + util.IntSliceToString(optionIds, ",") + ")"
+	}
 	_, err := db.con.Exec(`
 		DELETE FROM vote_in_poll 
 		WHERE poll_id = ? 
-		AND participant_id = ?
-		AND option_id NOT IN ` + inClause, pollId, participantId)
+		AND participant_id = ? ` + inClause, pollId, participantId)
 	util.HandleError(util.ErrorLogEvent{ Function: "db.sqlDeleteObsoleteVotes", Error: err })
 }
 
