@@ -43,8 +43,8 @@ func (db *Database) IdentifyParticipant(hashed string) (int, int) {
 	return pollId, participantId
 }
 
-func (db *Database) InsertPoll(poll model.Poll) int {
-	return db.sqlInsertPoll(poll)
+func (db *Database) InsertPoll(poll model.Poll, admintoken sys.Admintoken) int {
+	return db.sqlInsertPoll(poll, admintoken)
 }
 
 func (db *Database) SelectPoll(secret string) model.Poll {

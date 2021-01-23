@@ -7,6 +7,7 @@ import (
 	"pollywog/db"
 	"pollywog/domain/model"
 	"pollywog/system"
+	"strings"
 	"time"
 )
 
@@ -19,13 +20,13 @@ func ResolveParticipant(secret string) (int, int) {
 	return con.IdentifyParticipant(Hash(secret))
 }
 
-func supplySecrets(poll model.Poll) {
+func supplySecrets(poll model.Poll, admintoken sys.Admintoken) {
 	rand.Seed(time.Now().UnixNano())
 	participants := poll.Participants
 	for index, _ := range participants {
 		unhashed := randomString()
 		participants[index].Secret = Hash(unhashed)
-		notifyParticipant(poll, participants[index], unhashed)
+		notifyParticipant(poll, admintoken, participants[index], unhashed)
 	}
 }
 
@@ -44,7 +45,7 @@ func randomString() string {
 	return string(bytes)
 }
 
-func notifyParticipant(poll model.Poll, participant model.Participant, unhashed string) {
+func notifyParticipant(poll model.Poll, admintoken sys.Admintoken, participant model.Participant, unhashed string) {
 	var config *sys.Config
 	to := []string{participant.Mail}
 	msg := []byte("To: " + participant.Mail +
@@ -55,11 +56,51 @@ func notifyParticipant(poll model.Poll, participant model.Participant, unhashed 
 		"Title: " + poll.Title + "\r\n" +
 		"Description: " + poll.Description + "\r\n\r\n" +
 		"Use the following link to participate: " + config.Get().Client.BaseUrl + unhashed + "\r\n\r\n" +
-		"Best regards,\r\nPollywog \U0001F438")
+		"Best regards,\r\nPollywog \U0001F438" + invitedBy(admintoken.User))
 	sys.SendMail(to, msg)
 }
 
-func IsVerifiedAdmin(secret string) bool {
+func invitedBy(user string) string {
+	if len(user) > 0 {
+		return "\r\n\r\n(invited by " + user + ")"
+	} else {
+		return ""
+	}
+}
+
+func IsAdminAuthorizedToInviteParticipants(poll model.Poll, admintoken sys.Admintoken) bool {
+	if len(admintoken.Whitelist) > 0 {
+		for _, participant := range poll.Participants {
+			matches := false
+			for _, whitelistEntry := range admintoken.Whitelist {
+				if strings.HasSuffix(participant.Mail, whitelistEntry) {
+					matches = true
+					break
+				}
+			}
+			if !matches {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+func IsVerifiedAdmin(secret string) (bool, sys.Admintoken) {
+	var config *sys.Config
+	if deprecatedIsVerifiedAdmin(secret) {
+		return true, sys.Admintoken {}
+	} else {
+		for _, admintoken := range config.Get().Server.Admintokens {
+			if admintoken.Token == Hash(secret) {
+				return true, admintoken
+			}
+		}
+		return false, sys.Admintoken {}
+	}
+}
+
+func deprecatedIsVerifiedAdmin(secret string) bool {
 	var config *sys.Config
 	return Hash(config.Get().Server.Admintoken) == secret
 }

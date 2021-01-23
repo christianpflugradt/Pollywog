@@ -2,8 +2,15 @@ client:
   baseurl: https://example.xyz/motivote/#
 server:
   port: 9999
-  # exemplatory token: change it for your configuration!
+  # deprecated and will be removed in pollywog 2.x.x - use admintokens instead
   admintoken: KA6QxuATPx40RlTBBMUaWFTM39beUrVQckfHJ4D65cbzCIvFSi3cZiBos1M25U9pUCwRHX6UBW4abB5ebRT6Xyvzx9mg0p9edUV4eRabt1bd5sIZsdsdP6mUhV6UfSuP
+  admintokens:
+    # user can be empty, in this case the user won't be mentioned in the invitational mail for a poll
+    - user:
+      # token is the sha512/256 hash of the admin key send as authorization, see the readme for more details
+      token: 5d8b497cba2edb0a4d8024d4790ef026bed58a1f5486940e5a7b24db3998743c
+    - user: Christian
+      token: e9312e262a05dff9547b8bc86fa800ef5e08dcacf55fb6c48901cdced7b599e8
 database:
   driver: sqlite3
   # driver: mysql
