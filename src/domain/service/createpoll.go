@@ -3,6 +3,7 @@ package service
 import (
 	"pollywog/db"
 	"pollywog/domain/model"
+	sys "pollywog/system"
 	"time"
 )
 
@@ -39,11 +40,11 @@ func isDeadlineValid(poll model.Poll) bool {
 		poll.Deadline.After(time.Now().Add(time.Hour * time.Duration(1)))
 }
 
-func CreatePoll(poll model.Poll) model.Poll {
-	supplySecrets(poll)
+func CreatePoll(poll model.Poll, admintoken sys.Admintoken) model.Poll {
+	supplySecrets(poll, admintoken)
 	con := db.Database{}
 	defer con.Disconnect()
 	con.Connect()
-	id := con.InsertPoll(poll)
+	id := con.InsertPoll(poll, admintoken)
 	return con.SelectPollById(id)
 }

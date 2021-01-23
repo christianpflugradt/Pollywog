@@ -15,6 +15,7 @@ type Config struct {
 	Server struct {
 		Port string `yaml:"port"`
 		Admintoken string `yaml:"admintoken"`
+		Admintokens []Admintoken
 	}
 	Database struct {
 		Driver string `yaml:"driver"`
@@ -27,6 +28,12 @@ type Config struct {
 		Host string `yaml:"host"`
 		Port string `yaml:"port"`
 	}
+}
+
+type Admintoken struct {
+	User string `yaml:"user"`
+	Token string `yaml:"token"`
+	Whitelist []string `yaml:"whitelist"`
 }
 
 func (config *Config) Get() *Config {

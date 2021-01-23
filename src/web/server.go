@@ -3,11 +3,14 @@ package web
 import (
 	"encoding/json"
 	"net/http"
+	"os"
+	"os/signal"
 	"pollywog/domain/service"
 	sys "pollywog/system"
 	"pollywog/util"
 	"pollywog/web/representation"
 	"pollywog/web/transformer"
+	"syscall"
 )
 
 func multiPoll(w http.ResponseWriter, r *http.Request) {
@@ -23,18 +26,23 @@ func multiPoll(w http.ResponseWriter, r *http.Request) {
 }
 
 func postPoll(w http.ResponseWriter, r *http.Request) {
-	if service.IsVerifiedAdmin(r.Header.Get("Authorization")) {
+	verified, admintoken := service.IsVerifiedAdmin(r.Header.Get("Authorization"))
+	if verified {
 		var request representation.PollRequest
 		err := json.NewDecoder(r.Body).Decode(&request)
 		if err == nil {
 			poll := transformer.TransformPollRequest(request)
-			if service.IsValidForCreation(poll) {
-				createdPoll := service.CreatePoll(poll)
-				util.HandleInfo(util.InfoLogEvent{ Function: "web.postPoll", Message: "poll created"})
-				response := transformer.TransformDomainPoll(createdPoll)
-				err = json.NewEncoder(w).Encode(response)
+			if service.IsAdminAuthorizedToInviteParticipants(poll, admintoken) {
+				if service.IsValidForCreation(poll) {
+					createdPoll := service.CreatePoll(poll, admintoken)
+					util.HandleInfo(util.InfoLogEvent{ Function: "web.postPoll", Message: "poll created"})
+					response := transformer.TransformDomainPoll(createdPoll)
+					err = json.NewEncoder(w).Encode(response)
+				} else {
+					w.WriteHeader(http.StatusUnprocessableEntity)
+				}
 			} else {
-				w.WriteHeader(http.StatusUnprocessableEntity)
+				w.WriteHeader(http.StatusForbidden)
 			}
 		} else {
 			w.WriteHeader(http.StatusBadRequest)
@@ -115,10 +123,22 @@ func postVotes(w http.ResponseWriter, r *http.Request) {
 }
 
 func Serve() {
+	listenForShutdownSignal()
+	util.HandleInfo(util.InfoLogEvent{ Function: "web.Serve", Message: "starting Pollywog instance..." })
 	http.HandleFunc("/poll", multiPoll)
 	http.HandleFunc("/options", postOptions)
 	http.HandleFunc("/votes", postVotes)
 	var config *sys.Config
 	err := http.ListenAndServe(":" + config.Get().Server.Port, nil)
 	util.HandleFatal(util.ErrorLogEvent{ Function: "web.Serve", Error: err })
+}
+
+func listenForShutdownSignal() {
+	shutdownHook := make(chan os.Signal)
+	signal.Notify(shutdownHook, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		<-shutdownHook
+		util.HandleInfo(util.InfoLogEvent{Function: "web.Serve", Message: "stopping Pollywog instance... (received SIGTERM)"})
+		os.Exit(0)
+	}()
 }

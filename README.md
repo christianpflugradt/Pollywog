@@ -68,7 +68,7 @@ and it will produce a `pollywog` binary file: `go build src/pollywog.go`
 
 ## Configuration ##
 
-Pollywog uses Yaml as configuration format. The following properties are currently available
+Pollywog uses YAML as configuration format. The following properties are currently available
 as part of the configuration:
 
 **client.baseurl**: This URL plus the personalized secret are sent to all participants in a poll.
@@ -78,17 +78,36 @@ configuration file how a link to Motivote can look like.
 
 **server.port**: This is the port Pollywog will listen to for incoming requests.
 
-**server.admintoken**: This token secures administrative actions like creating a poll. Important:
-This token is your private key and should not be used anywhere else outside this configuration file.
-Pollywog uses [SHA-512/256](https://en.wikipedia.org/wiki/SHA-2) to calculate the public key
-and it is the public key that must be presented when using administrative actions, never the private key.
-[This tool](https://emn178.github.io/online-tools/sha512_256.html) can hash your private key 
-(the hash being your public key), alternatively 
+**server.admintoken**: Deprecated and will be removed in Pollywog 2.x.x
+
+**server.admintokens**: Holds a list of administrative tokens 
+consisting of the following three properties described below: **user**, **token** and **whitelist**
+
+**server.admintokens[].user**: Optional user name associated with an admin token.
+If present it will be mentioned in the invitational mail to a poll.
+
+**server.admintokens[].token**: This token secures administrative actions like creating a poll.
+Pollywog uses [SHA-512/256](https://en.wikipedia.org/wiki/SHA-2) to hash tokens. 
+This configuration field contains the hashed token, so that the unhashed token, that must be present
+in the Authorization header when creating a poll, cannot be derived from the configuration easily.
+If multiple persons are privileged to create polls it is recommended that each of them have their own admintoken
+and do not share their unhashed tokens with each other.
+
+[This tool](https://emn178.github.io/online-tools/sha512_256.html) can hash your token, alternatively 
 [just use Go ](https://gitlab.com/christianpflugradt/pollywog/-/blob/master/src/domain/service/authorization.go)
 (the function Hash()).
 
+**server.admintokens[].whitelist**: If empty no whitelist will be applied. Otherwise: 
+Holds a list of strings all participant mail addresses must match
+for an admin to invite them to a poll. Be aware that neither regular expressions nor classic wildcards are supported,
+instead a whitelist entry matches a mail address if the mail address ends with that whitelist entry.
+If the whitelist is used to restrict who an admin can invite to a poll. It is recommended to either
+add complete domains or specific mail addresses to the whitelist. For example having "@mail-example.org"
+and "john.doe@example-mail.com" in the whitelist will allow an admin to invite everyone with a mail address
+in the domain "@mail-example.org" as well as John Doe from the example-mail.com domain.
+
 **database.driver**: Pollywog uses the `database/sql` interface of Go. The recommended database and driver
-for production is `mysql`. For development I have used `sqlite` but due to its shortcomings it is not
+for production is `mysql`. For development, I have used `sqlite` but due to its shortcomings it is not
 recommended to be used in a productive system with concurrent access.
 
 **database.dataSourceName**: For mysql the proper string is `user:password@pollywog` assuming the database
@@ -130,7 +149,7 @@ or [Insomnia](https://insomnia.rest/).
 
 **http header**: There are two header fields you should set in your request:
  * Header: `Content-Type`, Value: `application/json`
- * Header: `Authorization`, Value: `your public key for the admintoken`
+ * Header: `Authorization`, Value: `your unhashed admintoken`
  
 **request body**: The following is a legitimate body to create a new poll. Make sure the request body is valid
 [JSON](https://www.json.org/json-en.html).
