@@ -7,7 +7,7 @@ server:
   admintokens:
     # user can be empty, in this case the user won't be mentioned in the invitational mail for a poll
     - user:
-      # token is the sha512/256 hash of the admin key send as authorization, see the readme for more details
+      # token is the sha512/256 hash of the admin key sent as authorization, see the readme for more details
       token: 5d8b497cba2edb0a4d8024d4790ef026bed58a1f5486940e5a7b24db3998743c
     - user: Christian
       token: e9312e262a05dff9547b8bc86fa800ef5e08dcacf55fb6c48901cdced7b599e8
