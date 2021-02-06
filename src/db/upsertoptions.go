@@ -36,9 +36,13 @@ func (db *Database) deleteObsoleteOptions(pollId int, participantId int, options
 func (db *Database) createNewOptions(options []model.PollOption) {
 	for _, option := range options {
 		if option.New {
+			optionText := option.Text
+			if len(optionText) > 255 {
+				optionText = optionText[:252] + "..."
+			}
 			_, err := db.con.Exec(`INSERT INTO option_in_poll 
 				(poll_id, participant_id, text) VALUES (?, ?, ?)`,
-				option.PollID, option.ParticipantID, option.Text)
+				option.PollID, option.ParticipantID, optionText)
 			util.HandleError(util.ErrorLogEvent{ Function: "db.createNewOptions", Error: err })
 		}
 	}
