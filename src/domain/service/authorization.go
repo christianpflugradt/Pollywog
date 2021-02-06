@@ -68,7 +68,7 @@ func invitedBy(user string) string {
 	}
 }
 
-func IsAdminAuthorizedToInviteParticipants(poll model.Poll, admintoken sys.Admintoken) bool {
+func IsAdminAuthorizedToInviteParticipants(poll model.Poll, admintoken sys.Admintoken) string {
 	if len(admintoken.Whitelist) > 0 {
 		for _, participant := range poll.Participants {
 			matches := false
@@ -79,24 +79,27 @@ func IsAdminAuthorizedToInviteParticipants(poll model.Poll, admintoken sys.Admin
 				}
 			}
 			if !matches {
-				return false
+				return "not allowed to send mails to " + participant.Mail
 			}
 		}
 	}
-	return true
+	return ""
 }
 
-func IsVerifiedAdmin(secret string) (bool, sys.Admintoken) {
+func IsVerifiedAdmin(secret string) (string, sys.Admintoken) {
+	if secret == "" {
+		return "no credentials provided", sys.Admintoken{}
+	}
 	var config *sys.Config
 	if deprecatedIsVerifiedAdmin(secret) {
-		return true, sys.Admintoken {}
+		return "", sys.Admintoken{}
 	} else {
 		for _, admintoken := range config.Get().Server.Admintokens {
 			if admintoken.Token == Hash(secret) {
-				return true, admintoken
+				return "", admintoken
 			}
 		}
-		return false, sys.Admintoken {}
+		return "invalid credentials provided", sys.Admintoken{}
 	}
 }
 

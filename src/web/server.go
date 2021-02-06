@@ -26,30 +26,32 @@ func multiPoll(w http.ResponseWriter, r *http.Request) {
 }
 
 func postPoll(w http.ResponseWriter, r *http.Request) {
-	verified, admintoken := service.IsVerifiedAdmin(r.Header.Get("Authorization"))
-	if verified {
+	errMsg, admintoken := service.IsVerifiedAdmin(r.Header.Get("Authorization"))
+	if errMsg == "" {
 		var request representation.PollRequest
 		err := json.NewDecoder(r.Body).Decode(&request)
 		if err == nil {
 			poll := transformer.TransformPollRequest(request)
-			if service.IsAdminAuthorizedToInviteParticipants(poll, admintoken) {
-				if service.IsValidForCreation(poll) {
+			errMsg = service.IsAdminAuthorizedToInviteParticipants(poll, admintoken)
+			if errMsg == "" {
+				errMsg = service.IsValidForCreation(poll)
+				if errMsg == "" {
 					createdPoll := service.CreatePoll(poll, admintoken)
 					util.HandleInfo(util.InfoLogEvent{ Function: "web.postPoll", Message: "poll created"})
 					response := transformer.TransformDomainPoll(createdPoll)
 					err = json.NewEncoder(w).Encode(response)
 				} else {
-					w.WriteHeader(http.StatusUnprocessableEntity)
+					http.Error(w, errMsg, http.StatusUnprocessableEntity)
 				}
 			} else {
-				w.WriteHeader(http.StatusForbidden)
+				http.Error(w, errMsg, http.StatusForbidden)
 			}
 		} else {
-			w.WriteHeader(http.StatusBadRequest)
+			http.Error(w, "unparseable request body: " + err.Error(), http.StatusBadRequest)
 		}
 		util.HandleError(util.ErrorLogEvent{ Function: "web.postPoll", Error: err })
 	} else {
-		w.WriteHeader(http.StatusUnauthorized)
+		http.Error(w, errMsg, http.StatusUnauthorized)
 	}
 }
 
