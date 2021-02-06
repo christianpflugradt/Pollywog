@@ -47,6 +47,16 @@ func (db *Database) InsertPoll(poll model.Poll, admintoken sys.Admintoken) int {
 	return db.sqlInsertPoll(poll, admintoken)
 }
 
+func (db *Database) DeletePoll(id int) {
+	db.sqlDeletePoll(id)
+}
+
+func (db *Database) SelectExpiredPolls() []int {
+	var config *sys.Config
+	cleanupSettings := config.Get().Poll.Cleanup
+	return db.sqlSelectExpiredPolls(cleanupSettings.SelectStatement, cleanupSettings.DaysUntilExpiration)
+}
+
 func (db *Database) SelectPoll(secret string) model.Poll {
 	return db.sqlSelectPoll(secret)
 }

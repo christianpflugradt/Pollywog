@@ -22,3 +22,12 @@ smtp:
   password: examplepassword
   host: example.xyz
   port: 25
+poll:
+  cleanup:
+    enabled: true
+    intervalInHours: 24
+    daysUntilExpiration: 30
+    # the following example is also the default value if left empty
+    # if your database requires a different syntax you can change it here
+    # note that the question mark '?' is a placeholder for the 'daysUntilExpiration' value and must be present
+    selectStatement: SELECT id FROM poll WHERE deadline < CURRENT_DATE - INTERVAL ? DAY

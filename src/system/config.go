@@ -15,7 +15,7 @@ type Config struct {
 	Server struct {
 		Port string `yaml:"port"`
 		Admintoken string `yaml:"admintoken"`
-		Admintokens []Admintoken
+		Admintokens []Admintoken `yaml:"admintokens"`
 	}
 	Database struct {
 		Driver string `yaml:"driver"`
@@ -27,6 +27,14 @@ type Config struct {
 		Password string `yaml:"password"`
 		Host string `yaml:"host"`
 		Port string `yaml:"port"`
+	}
+	Poll struct {
+		Cleanup struct {
+			Enabled bool `yaml:"enabled"`
+			IntervalInHours int `yaml:"intervalInHours"`
+			DaysUntilExpiration int `yaml:"daysUntilExpiration"`
+			SelectStatement string `yaml:"selectStatement"`
+		}
 	}
 }
 
