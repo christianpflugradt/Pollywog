@@ -40,7 +40,7 @@ func concatParams(params []LogEventParam) string {
 	if len(params) > 0 {
 		result = ": "
 		for _, param := range params {
-			result += param.Key + " = {" + param.Value + "}, "
+			result += param.Key + " = '" + param.Value + "', "
 		}
 		result = result[:len(result)-2]
 	}
@@ -51,9 +51,6 @@ func formatMessage(event InfoLogEvent) string {
 	result := ""
 	if len(event.Message) > 0 {
 		result = event.Message
-		if len(event.Params) > 0 {
-			result += ": "
-		}
 	}
 	return result
 }

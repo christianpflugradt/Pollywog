@@ -2,12 +2,14 @@ package main
 
 import (
 	"pollywog/db"
+	"pollywog/domain/service"
 	sys "pollywog/system"
 	"pollywog/web"
 )
 
 func main() {
 	prepareDatabase()
+	service.ScheduleCleanup()
 	web.Serve()
 }
 
