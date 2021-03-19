@@ -1,6 +1,6 @@
 # Pollywog
 
-[![pipeline status](https://gitlab.com/christianpflugradt/pollywog/badges/master/pipeline.svg)](https://gitlab.com/christianpflugradt/pollywog/-/commits/master) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![pipeline status](https://gitlab.com/christianpflugradt/pollywog/badges/main/pipeline.svg)](https://gitlab.com/christianpflugradt/pollywog/-/commits/main) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 Pollywog is an app for carrying out polls. Participants in a poll can add new options to a poll 
 and vote for options in the poll. Every poll is private and participants are invited by e-mail
