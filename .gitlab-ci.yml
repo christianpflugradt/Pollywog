@@ -13,6 +13,7 @@ build_snapshot:
     - echo "package model; const Version = \"`git describe --tags`\"" > src/domain/model/version.go
   script:
     - cd src
+    - go mod tidy
     - go build pollywog.go
   artifacts:
     when: always
@@ -28,6 +29,7 @@ publish_release:
     - echo "package model; const Version = \"`git describe --tags`\"" > src/domain/model/version.go
   script:
     - cd src
+    - go mod tidy
     - go build pollywog.go
   artifacts:
     when: always
