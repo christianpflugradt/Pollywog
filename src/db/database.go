@@ -35,8 +35,8 @@ func (db *Database) IdentifyParticipant(hashed string) (int, int) {
 	var pollId, participantId int
 	err := db.con.QueryRow("SELECT poll_id, id FROM participant_in_poll WHERE secret = ?",
 		hashed).Scan(&pollId, &participantId)
-	util.HandleError(util.ErrorLogEvent{ Function: "db.IdentifyParticipant", Error: err })
 	if err != nil {
+		// do not log authentication failures
 		pollId = -1
 		participantId = -1
 	}

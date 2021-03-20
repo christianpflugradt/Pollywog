@@ -117,6 +117,8 @@ of the Pollywog database / schema is `pollywog`.
 **smtp**: Smtp configuration is required to send the invitations to all participants when creating a poll.
 An own e-mail server is not necessarily required to use Pollywog. A free e-mail address is enough 
 and in this case you would simply enter the same values as when using an e-mail client such as Thunderbird.
+If your smtp server does not require authentication, leave the password empty. The smtp user will be used as
+sender in any case.
 
 ## Application programming interface ##
 

@@ -13,11 +13,12 @@ build_snapshot:
     - echo "package model; const Version = \"`git describe --tags`\"" > src/domain/model/version.go
   script:
     - cd src
+    - go mod tidy
     - go build pollywog.go
   artifacts:
     when: always
     paths:
-      - pollywog
+      - src/pollywog
     expire_in: 1 week
   except:
     - tags
@@ -28,11 +29,12 @@ publish_release:
     - echo "package model; const Version = \"`git describe --tags`\"" > src/domain/model/version.go
   script:
     - cd src
+    - go mod tidy
     - go build pollywog.go
   artifacts:
     when: always
     paths:
-      - pollywog
+      - src/pollywog
     expire_in: 1 week
   only:
     - tags
