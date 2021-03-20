@@ -30,14 +30,14 @@ The recommended way to run Pollywog in production is packed as a Docker containe
 
 ### Requirements
 
-* Git
+* Git (to clone the repository and checkout the latest version of Pollywog)
 * Go (if you want to build an executable)
 * Docker (if you want to build a docker image)
 
 ### How to compile
 
-These instructions should work on Linux and Mac. If it does not or you're building on Windows,
-you will probably be able to figure out yourself how to rewrite the scripts.
+This instruction should work on Linux and Mac, and likely on Windows with Linux subsystem.
+If it does not, you will probably be able to figure out yourself how to rewrite the scripts.
 
 1. clone this repository: `git clone https://gitlab.com/christianpflugradt/pollywog.git`
 2. enter the directory: `cd pollywog`
@@ -51,11 +51,11 @@ you will probably be able to figure out yourself how to rewrite the scripts.
 Now if you want to build an executable, run the following command:
 `./build-from-source.sh`
 
-This will produce a binary file `pollywog` in the `src` folder.exemplary
+This will produce a binary file `pollywog` in the [src](src) folder.
 
 You can run pollywog as follows: `./pollywog example-config.yml`
 
-`example-config.yml` is given as a exemplary config file in this repository.
+[example-config.yml](example-config.yml) is given as a exemplary config file in this repository.
 You should replace it with your own configuration file.
 You should also read the Configuration chapter further down this Readme.
 
