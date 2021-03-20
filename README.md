@@ -9,11 +9,11 @@ via a personalized link.
 Pollywog is a server application providing a REST interface to create polls and participating in them.
 The recommended front end to use Pollywog with is [Motivote](https://gitlab.com/christianpflugradt/motivote).
 
-## Deploy an instance of Pollywog ##
+## Deploy an instance of Pollywog
 
 Each version of Pollywog, represented by a git tag, is built in Gitlab CI and can be downloaded from there
 as long as the build artefacts are available. However the pipeline uses the latest version of GLIBC available
-in the environment and thus it is likely that the compiled artefact will not run in your environment.
+in the environment and thus it is possible that the compiled artifact will not run in your environment.
 For that reason the recommended way to obtain a binary of Pollywog is to compile it yourself.
 
 Pollywog expects exactly one argument to be passed on start up. That argument is the file name of the 
@@ -26,47 +26,68 @@ Assuming the binary is named `pollywog` and the configuration file `pollywog.yml
 
 The recommended way to run Pollywog in production is packed as a Docker container.
 
-## Compile Pollywog from source ##
+## Compile Pollywog from source
 
-As you can see in the [gitlab-ci.yml](https://gitlab.com/christianpflugradt/pollywog/-/blob/master/.gitlab-ci.yml)
-of the project, there are basically four to five steps required to compile Pollywog yourself:
- 1. Install [Go](https://golang.org/)
- 2. Add the project to your GOPATH
- 3. Download the dependencies
- 4. Set the version
- 5. Run the build command
+### Requirements
 
-### Add the project to your GOPATH ###
+* Git
+* Go (if you want to build an executable)
+* Docker (if you want to build a docker image)
 
-How you do it is up to you. If you're not familiar with Go and only use it for Pollywog
-I'd recommend to set up a symbolic link:
- * `cd ~/go/src`
- * `ln -s /path-to-pollywog-project/src pollywog`
+### How to compile
 
-I assume the same can be achieved under Windows using a shortcut.
+These instructions should work on Linux and Mac. If it does not or you're building on Windows,
+you will probably be able to figure out yourself how to rewrite the scripts.
 
-### Download the dependencies ###
+1. clone this repository: `git clone https://gitlab.com/christianpflugradt/pollywog.git`
+2. enter the directory: `cd pollywog`
+3. checkout the latest [pollywog version](https://gitlab.com/christianpflugradt/pollywog/-/tags),
+    e.g. `git checkout 1.7.2`
+4. write the version you checked out into the source code:
+    `./set-version.sh 1.7.2` (exemplary for the version you checked out)
 
-Pollywog depends on the following libraries (install them via go get)
-* github.com/go-sql-driver/mysql
-* github.com/mattn/go-sqlite3
-* gopkg.in/yaml.v2
+#### Binary file
 
-### Set the version & Run the build command ###
+Now if you want to build an executable, run the following command:
+`./build-from-source.sh`
 
-As you can see in Gitlab CI the Pollywog version is set as a Go constant using git describe:
+This will produce a binary file `pollywog` in the `src` folder.exemplary
 
-`echo "package model; const Version = \"`git describe --tags`\"" > src/domain/model/version.go`
+You can run pollywog as follows: `./pollywog example-config.yml`
 
-Setting the version is optional, but it will be revealed via Pollywog's API
-and therefore it is a good idea to write the correct version into the binary. The version should
-be equal to the git tag you checked out. Eh, you're on master? Nah, better check out the
-[latest tag](https://gitlab.com/christianpflugradt/pollywog/-/tags) instead, you know `git checkout tag-name`.
+`example-config.yml` is given as a exemplary config file in this repository.
+You should replace it with your own configuration file.
+You should also read the Configuration chapter further down this Readme.
 
-Now once that is done simply run the build command from the project root
-and it will produce a `pollywog` binary file: `go build src/pollywog.go`
+#### Docker image
 
-## Configuration ##
+If you want to create a docker image instead, create a file `pollywog.yml` first.
+You can create that file as a copy of the file `example-config.yml` and adjust the parameters to your needs.
+You should also read the Configuration chapter further down this Readme.
+
+Now run `docker build -t pollywog .`
+
+You can start a docker container of this image by running `docker run -p 9999:9999 pollywog`
+
+Please note that 9999 is the default port from `example-config.yml`, you can choose any port you like.
+
+#### Database support
+
+Pollywog provides drivers for:
+* mysql/mariadb
+* postgresql
+* sqlite (only recommended for developing/testing)
+
+With some very rudimentary knowledge of Go you can easily add other drivers
+or remove those you don't use to decrease the size of the executable:
+* Choose a driver that conforms to the [database/sql interface](https://golang.org/pkg/database/sql/)
+* import the driver in the [database.go file](src/db/database.go)
+* run `go mod tidy` to automatically add the latest version of the driver to the [go module file](src/go.mod)
+
+For instance to provide support for postgresql, I have added the following line
+to the import statement at the top of the database.go file: `_ "github.com/jackc/pgx/v4"`
+
+## Configuration
 
 Pollywog uses YAML as configuration format. The following properties are currently available
 as part of the configuration:
@@ -120,14 +141,14 @@ and in this case you would simply enter the same values as when using an e-mail 
 If your smtp server does not require authentication, leave the password empty. The smtp user will be used as
 sender in any case.
 
-## Application programming interface ##
+## Application programming interface
 
-### Administrative actions ###
+### Administrative actions
 
 There is currently one administrative action:
  * create a poll
  
-#### A word about security ####
+#### A word about security
 
 Administrative actions involve all things that could be misused and create damage. For instance
 anonymous creation of new polls could result in thousands of polls being created and thus
@@ -139,7 +160,7 @@ It is also recommended to change your admintoken regularly. As the configuration
 and can be updated any time this is very easy to achieve and you could even write a script that changes the token
 on a regular basis and notifies all admins about their new public key.
  
-#### Create a poll ####
+#### Create a poll
 
 At this point Motivote does not offer a user interface for administrative actions,
 so the recommended way is to use a tool for http requests like [Postman](https://www.postman.com/)
@@ -173,7 +194,7 @@ or [Insomnia](https://insomnia.rest/).
 }
 ```
 
-### Client development ###
+### Client development
 
 Motivote is the official client for Pollywog but due to the open API it is very easy to write your own client.
 As poll participants are invited via e-mail it is currently recommended that your client can be called via a URL.
@@ -254,9 +275,9 @@ and the request will be responded to with the `Unprocessable Entity` status code
 If the request is deemed valid, Pollywog will return `getPoll()` which results in a `OK` response
 and a response body containing the current state of the poll after the request has been processed.
 
-## FAQ ##
+## FAQ
 
-### Where are the unit tests? ###
+### Where are the unit tests?
 
 The 1.0.0 version of Pollywog along with the 1.0.0 version of Motivote has been written
 within three weeks in my spare time, meaning after my regular work and on weekends.
@@ -267,11 +288,11 @@ some things had to be neglected.
 I have not yet decided if I will add unit tests subsequently. I will however certainly do that once
 the codebase continues to grow and manual testing becomes a bigger effort than writing automatic tests.
 
-### Why do I have to compile Pollywog myself? ###
+### Why do I have to compile Pollywog myself?
 
 I'm working on a solution to provide binaries permanently and with a better support 
 for different operating systems and architectures but it is not ready yet.
 
-### I want feature XYZ ###
+### I want feature XYZ
 
 Open an issue on Gitlab and I will consider implementing that feature.
