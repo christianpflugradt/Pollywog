@@ -1,5 +1,9 @@
 .idea
 *.iml
 
+src/go.sum
+
+pollywog
+
 # Don't check your custom config file in!
 local-config.yml

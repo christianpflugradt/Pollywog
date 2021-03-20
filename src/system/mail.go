@@ -7,11 +7,14 @@ import (
 
 func SendMail(to []string, message []byte) {
 	var config *Config
-	auth := smtp.PlainAuth(
-		config.Get().Smtp.Identity,
-		config.Get().Smtp.User,
-		config.Get().Smtp.Password,
-		config.Get().Smtp.Host)
+	var auth smtp.Auth
+	if len(config.Get().Smtp.Password) > 0 {
+		auth = smtp.PlainAuth(
+			config.Get().Smtp.Identity,
+			config.Get().Smtp.User,
+			config.Get().Smtp.Password,
+			config.Get().Smtp.Host)
+	}
 	err := smtp.SendMail(
 		config.Get().Smtp.Host + ":" + config.Get().Smtp.Port,
 		auth,
