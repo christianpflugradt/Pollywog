@@ -55,7 +55,7 @@ func notifyParticipant(poll model.Poll, admintoken sys.Admintoken, participant m
 		"You are invited to participate in a poll.\r\n\r\n" +
 		"Title: " + poll.Title + "\r\n" +
 		"Description: " + poll.Description + "\r\n\r\n" +
-		"Use the following link to participate: " + config.Get().Client.BaseUrl + unhashed + "\r\n\r\n" +
+		"Use the following link to participate: " + config.Get().Client.BaseUrl + "#" + unhashed + "\r\n\r\n" +
 		"Best regards,\r\nPollywog \U0001F438" + invitedBy(admintoken.User))
 	sys.SendMail(to, msg)
 }
