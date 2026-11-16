@@ -1,5 +1,15 @@
 # Pollywog
 
+> [!WARNING]
+> **This project is archived.** I no longer use, develop or maintain Pollywog.
+> It was last updated in 2023, so expect its Go version and dependencies to be
+> outdated and to contain known vulnerabilities. Since it handles admin tokens
+> and sends e-mails via your SMTP server, please think twice before exposing it
+> to the internet. Its web client [Motivote](https://gitlab.com/christianpflugradt/motivote)
+> is archived as well. The code stays available for reference. Use it at your own
+> risk, or fork it if you want to continue it. Please don't confuse it with my
+> active projects.
+
 [![version](https://badgen.net/gitlab/release/christianpflugradt/pollywog)](https://gitlab.com/christianpflugradt/pollywog/-/tags) [![pipeline status](https://gitlab.com/christianpflugradt/pollywog/badges/main/pipeline.svg)](https://gitlab.com/christianpflugradt/pollywog/-/commits/main) [![license](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 Pollywog is an app for carrying out polls. Participants in a poll can add new options to a poll 
